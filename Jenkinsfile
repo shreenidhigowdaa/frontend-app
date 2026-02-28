@@ -4,19 +4,21 @@ pipeline {
     stages {
         stage('Clone') {
             steps {
-                checkout scm
+                git 'https://github.com/shreenidhigowdaa/frontend-app.git'
             }
         }
 
-        stage('Install Dependencies') {
+        stage('Build Docker Image') {
             steps {
-                sh 'npm install'
+                sh 'docker build -t frontend-app .'
             }
         }
 
-        stage('Build') {
+        stage('Deploy') {
             steps {
-                sh 'npm run build'
+                sh 'docker stop frontend-container || true'
+                sh 'docker rm frontend-container || true'
+                sh 'docker run -d -p 80:80 --name frontend-container frontend-app'
             }
         }
     }
